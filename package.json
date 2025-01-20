@@ -1,0 +1,44 @@
+{
+  "name": "polish-thesaurus",
+  "title": "Polish Thesaurus",
+  "description": "Find synonyms for Polish words",
+  "icon": "command-icon.png",
+  "author": "Your Name",
+  "categories": [
+    "Productivity",
+    "Language"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "find-synonyms",
+      "title": "Find Polish Synonyms",
+      "description": "Look up synonyms for Polish words",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.62.0",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.71",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint": "^8.49.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.7.3"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": []
+}
