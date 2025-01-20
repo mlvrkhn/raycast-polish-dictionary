@@ -1,48 +1,47 @@
-import { useState } from "react";
-import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { useState, useEffect } from "react";
+import { Action, ActionPanel, List, showToast, Toast, environment } from "@raycast/api";
+import * as fs from "fs/promises";
+import * as path from "path";
+import { findSynonyms } from "./utils/thesaurus";
 
 export default function Command() {
   const [word, setWord] = useState<string>("");
-  const [definitions, setDefinitions] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [synonyms, setSynonyms] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [thesaurusContent, setThesaurusContent] = useState<string>("");
 
-  async function searchWord(searchWord: string) {
-    if (!searchWord) return;
-
-    setIsLoading(true);
-    try {
-      // Use a simple Polish dictionary API
-      const response = await fetch(`https://sjp.pl/slownik/szukaj.html?szukaj=${encodeURIComponent(searchWord)}`);
-      const text = await response.text();
-      
-      // Basic parsing of definitions
-      const definitionRegex = /<div class="haslo">(.*?)<\/div>/g;
-      const matches = [...text.matchAll(definitionRegex)];
-      
-      const extractedDefinitions = matches
-        .map(match => match[1])
-        .filter(def => def.trim() !== '');
-
-      setDefinitions(extractedDefinitions);
-      
-      if (extractedDefinitions.length === 0) {
+  // Load thesaurus file once when component mounts
+  useEffect(() => {
+    async function loadThesaurus() {
+      try {
+        // Use environment.assetsPath for correct path resolution
+        const thesaurusPath = path.join(environment.assetsPath, "thesaurus-utf8.txt");
+        const content = await fs.readFile(thesaurusPath, "utf-8");
+        setThesaurusContent(content);
+      } catch (error) {
+        console.error(error);
         await showToast({
           style: Toast.Style.Failure,
-          title: "Nie znaleziono definicji",
-          message: `Brak informacji dla słowa "${searchWord}"`
+          title: "Błąd wczytywania",
+          message: "Nie udało się wczytać słownika synonimów.",
         });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      await showToast({
-        style: Toast.Style.Failure,
-        title: "Błąd wyszukiwania",
-        message: "Nie udało się pobrać definicji. Sprawdź połączenie internetowe."
-      });
-    } finally {
-      setIsLoading(false);
     }
-  }
+    loadThesaurus();
+  }, []);
+
+  // Search on each keystroke
+  useEffect(() => {
+    if (!thesaurusContent || !word) {
+      setSynonyms([]);
+      return;
+    }
+
+    const results = findSynonyms(word, thesaurusContent);
+    setSynonyms(results);
+  }, [word, thesaurusContent]);
 
   return (
     <List
@@ -51,18 +50,15 @@ export default function Command() {
       searchBarPlaceholder="Wpisz polskie słowo"
       isLoading={isLoading}
     >
-      {definitions.length > 0 ? (
-        <List.Section title="Definicje">
-          {definitions.map((def, index) => (
+      {synonyms.length > 0 ? (
+        <List.Section title="Synonimy">
+          {synonyms.map((synonym, index) => (
             <List.Item
               key={index}
-              title={def}
+              title={synonym}
               actions={
                 <ActionPanel>
-                  <Action.CopyToClipboard 
-                    title="Kopiuj definicję" 
-                    content={def} 
-                  />
+                  <Action.CopyToClipboard title="Kopiuj synonim" content={synonym} />
                 </ActionPanel>
               }
             />
@@ -71,16 +67,8 @@ export default function Command() {
       ) : (
         <List.Section title="Wyszukiwanie">
           <List.Item
-            title="Znajdź definicję"
-            subtitle="Naciśnij Enter, aby wyszukać"
-            actions={
-              <ActionPanel>
-                <Action 
-                  title="Szukaj" 
-                  onAction={() => searchWord(word)} 
-                />
-              </ActionPanel>
-            }
+            title={word ? "Brak synonimów" : "Wpisz słowo aby wyszukać"}
+            subtitle={word ? `Nie znaleziono synonimów dla "${word}"` : ""}
           />
         </List.Section>
       )}

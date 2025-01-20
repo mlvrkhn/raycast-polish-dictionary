@@ -1,31 +1,30 @@
 # Polish Thesaurus Raycast Extension
 
-A Raycast extension to find synonyms for Polish words.
+## Overview
+A Raycast extension that helps you find synonyms for Polish words quickly and easily.
 
 ## Features
-
 - Search for synonyms of Polish words
-- Copy synonyms to clipboard
-- Simple and fast interface
+- Supports Polish characters and diacritical marks
+- Simple and intuitive interface
 
 ## Installation
-
-1. Ensure you have Raycast installed
-2. Clone this repository
-3. Run `npm install`
-4. Run `npm run dev` to start development
+1. Open Raycast
+2. Go to Extensions
+3. Search for "Polish Thesaurus"
+4. Install the extension
 
 ## Usage
+1. Trigger the extension using the "Find Polish Synonyms" command
+2. Type a Polish word
+3. View the list of synonyms
 
-1. Open Raycast
-2. Type "Find Polish Synonyms"
-3. Enter a Polish word
-4. Browse and copy synonyms
-
-## Limitations
-
-Currently uses a mock dataset. Future versions will integrate with a real Polish thesaurus API.
+## Development
+- Built with TypeScript and Raycast API
+- Uses a comprehensive Polish thesaurus database
 
 ## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Contributions welcome! Please open an issue or submit a pull request.
+## License
+MIT License
