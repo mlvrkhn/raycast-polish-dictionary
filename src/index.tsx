@@ -25,8 +25,10 @@ export default function Command() {
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      // Read thesaurus file
-      const thesaurusPath = join(__dirname, "../assets/thesaurus-1.5.txt");
+      // Use the exact path where Raycast is looking
+      const extensionDir = '/Users/mlvrkhn/.config/raycast/extensions/polish-thesaurus';
+      const thesaurusPath = join(extensionDir, "thesaurus-1.5.txt");
+      console.log('Looking for thesaurus at:', thesaurusPath);
       const thesaurusContent = readFileSync(thesaurusPath, 'utf8');
       
       // Find synonyms
@@ -45,6 +47,7 @@ export default function Command() {
         });
       }
     } catch (error) {
+      console.error('Error reading thesaurus:', error);  // Add error logging
       showToast({
         style: Toast.Style.Failure,
         title: "Błąd",

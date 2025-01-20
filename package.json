@@ -5,8 +5,7 @@
   "icon": "command-icon.png",
   "author": "Your Name",
   "categories": [
-    "Productivity",
-    "Language"
+    "Education"
   ],
   "license": "MIT",
   "commands": [
@@ -39,5 +38,9 @@
   },
   "version": "1.0.0",
   "main": "index.js",
-  "keywords": []
+  "keywords": [],
+  "files": [
+    "src/**/*",
+    "thesaurus-1.5.txt"
+  ]
 }
