@@ -3,23 +3,31 @@ import { ThesaurusEntry } from "../types";
 const COMMENT_CHAR = "#";
 const SEPARATOR = ";";
 
+/**
+ * Normalizes Polish text by removing diacritics and converting to lowercase
+ * @param text - Text to normalize
+ * @returns Normalized text without Polish diacritics
+ */
 export function normalizePolish(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ą/g, "a")
-    .replace(/ć/g, "c")
-    .replace(/ę/g, "e")
-    .replace(/ł/g, "l")
-    .replace(/ń/g, "n")
-    .replace(/ó/g, "o")
-    .replace(/ś/g, "s")
-    .replace(/ż/g, "z")
-    .replace(/ź/g, "z")
+    .replace(/[ąćęłńóśżź]/g, (match) => {
+      const replacements: Record<string, string> = {
+        'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l',
+        'ń': 'n', 'ó': 'o', 'ś': 's', 'ż': 'z', 'ź': 'z'
+      };
+      return replacements[match] || match;
+    })
     .trim();
 }
 
+/**
+ * Parses a single line from the thesaurus file
+ * @param line - Line from thesaurus file
+ * @returns ThesaurusEntry object or null if line is invalid
+ */
 export function parseThesaurusLine(line: string): ThesaurusEntry | null {
   const trimmedLine = line.trim();
   
@@ -42,6 +50,12 @@ export function parseThesaurusLine(line: string): ThesaurusEntry | null {
   };
 }
 
+/**
+ * Finds synonyms for a given word in the thesaurus content
+ * @param searchWord - Word to find synonyms for
+ * @param thesaurusContent - Content of the thesaurus file
+ * @returns Array of unique synonyms
+ */
 export function findSynonyms(searchWord: string, thesaurusContent: string): string[] {
   const normalizedSearch = normalizePolish(searchWord);
   if (!normalizedSearch) {

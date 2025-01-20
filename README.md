@@ -1,30 +1,48 @@
-# Polish Thesaurus Raycast Extension
+# Polish Thesaurus for Raycast
 
-## Overview
-A Raycast extension that helps you find synonyms for Polish words quickly and easily.
+Szybko znajdź synonimy polskich słów bezpośrednio z Raycast. Rozszerzenie działa w trybie offline, korzystając z lokalnej bazy synonimów.
 
-## Features
-- Search for synonyms of Polish words
-- Supports Polish characters and diacritical marks
-- Simple and intuitive interface
+## Funkcje
+- 🔍 Wyszukiwanie w czasie rzeczywistym
+- 🔤 Obsługa polskich znaków diakrytycznych
+- 📝 Kopiowanie synonimów do schowka
+- ⚡️ Szybkie działanie (baza offline)
+- 🎯 Proste i intuicyjne użycie
 
-## Installation
-1. Open Raycast
-2. Go to Extensions
-3. Search for "Polish Thesaurus"
-4. Install the extension
+## Instalacja
 
-## Usage
-1. Trigger the extension using the "Find Polish Synonyms" command
-2. Type a Polish word
-3. View the list of synonyms
+1. Otwórz Raycast
+2. Przejdź do Store (⌘ + ,)
+3. Wyszukaj "Polish Thesaurus"
+4. Kliknij Install
 
-## Development
-- Built with TypeScript and Raycast API
-- Uses a comprehensive Polish thesaurus database
+## Użycie
 
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Otwórz Raycast (domyślnie ⌘ + Space)
+2. Wpisz "Find Polish Synonyms" lub "syn" 
+3. Wpisz polskie słowo
+4. Wyniki pojawią się automatycznie podczas pisania
+5. Użyj ⌘ + C aby skopiować wybrany synonim
 
-## License
-MIT License
+## Dla Deweloperów
+
+### Wymagania
+- Node.js (>= 16.x)
+- npm lub yarn
+- Raycast (najnowsza wersja)
+
+### Instalacja lokalna
+```bash
+# Klonowanie repozytorium
+git clone https://github.com/mlvrkhn/raycast-polish-dictionary.git
+cd raycast-polish-dictionary
+
+# Instalacja zależności
+npm install
+
+# Uruchomienie w trybie deweloperskim
+npm run dev
+```
+
+## Licencja
+MIT License - zobacz plik [LICENSE](LICENSE)

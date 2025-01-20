@@ -1,12 +1,12 @@
 {
   "name": "polish-thesaurus",
   "title": "Polish Thesaurus",
-  "description": "Find synonyms for Polish words",
+  "description": "Find synonyms for Polish words quickly and easily. Works offline with a comprehensive Polish thesaurus database.",
   "icon": "metadata/polish-thesaurus.png",
   "author": "mlvrkhn",
   "categories": [
-    "Extension Packs",
-    "Other"
+    "Other",
+    "Extension Packs", "Language Packs"
   ],
   "license": "MIT",
   "commands": [
@@ -22,20 +22,29 @@
     "@raycast/api": "^1.62.0"
   },
   "devDependencies": {
-    "@raycast/eslint-config": "^1.0.5",
     "@types/node": "^18.18.5",
     "@types/react": "^18.0.28",
     "typescript": "^4.9.4"
   },
   "scripts": {
     "build": "ray build -e dist",
-    "dev": "ray develop"
+    "dev": "ray develop",
+    "lint": "tsc --noEmit"
   },
   "version": "1.0.0",
   "keywords": [
     "polish",
     "thesaurus",
     "synonyms",
-    "language"
-  ]
+    "language",
+    "dictionary",
+    "offline"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mlvrkhn/raycast-polish-dictionary"
+  },
+  "bugs": {
+    "url": "https://github.com/mlvrkhn/raycast-polish-dictionary/issues"
+  }
 }
