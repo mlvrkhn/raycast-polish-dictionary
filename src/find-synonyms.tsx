@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
-import axios from "axios";
-
-interface WordDefinition {
-  definition: string;
-  synonyms?: string[];
-}
 
 export default function Command() {
   const [word, setWord] = useState<string>("");
-  const [definitions, setDefinitions] = useState<WordDefinition[]>([]);
+  const [definitions, setDefinitions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function searchWord(searchWord: string) {
@@ -17,18 +11,17 @@ export default function Command() {
 
     setIsLoading(true);
     try {
-      // Use a proxy to avoid CORS issues
-      const response = await axios.get(`https://cors-anywhere.herokuapp.com/https://sjp.pl/slownik/szukaj.html?szukaj=${encodeURIComponent(searchWord)}`);
+      // Use a simple Polish dictionary API
+      const response = await fetch(`https://sjp.pl/slownik/szukaj.html?szukaj=${encodeURIComponent(searchWord)}`);
+      const text = await response.text();
       
-      // Basic web scraping (very rudimentary, needs improvement)
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(response.data, 'text/html');
+      // Basic parsing of definitions
+      const definitionRegex = /<div class="haslo">(.*?)<\/div>/g;
+      const matches = [...text.matchAll(definitionRegex)];
       
-      const definitionElements = doc.querySelectorAll('.haslo');
-      const extractedDefinitions: WordDefinition[] = Array.from(definitionElements).map(el => ({
-        definition: el.textContent || '',
-        synonyms: [] // SJP.pl doesn't directly provide synonyms
-      }));
+      const extractedDefinitions = matches
+        .map(match => match[1])
+        .filter(def => def.trim() !== '');
 
       setDefinitions(extractedDefinitions);
       
@@ -63,12 +56,12 @@ export default function Command() {
           {definitions.map((def, index) => (
             <List.Item
               key={index}
-              title={def.definition}
+              title={def}
               actions={
                 <ActionPanel>
                   <Action.CopyToClipboard 
                     title="Kopiuj definicję" 
-                    content={def.definition} 
+                    content={def} 
                   />
                 </ActionPanel>
               }
