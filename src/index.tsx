@@ -1,93 +1,104 @@
-import { useState } from "react";
-import { Action, ActionPanel, Form, List, showToast, Toast } from "@raycast/api";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { Action, ActionPanel, List, showToast, Toast } from "@raycast/api";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { findSynonyms } from "./utils/thesaurus";
 
-interface WordDefinition {
-  definition: string;
-  synonyms?: string[];
+interface State {
+  synonyms: string[];
+  isLoading: boolean;
 }
 
 export default function Command() {
   const [word, setWord] = useState<string>("");
-  const [definitions, setDefinitions] = useState<WordDefinition[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [state, setState] = useState<State>({
+    synonyms: [],
+    isLoading: false
+  });
 
-  async function searchWord(searchWord: string) {
-    if (!searchWord) return;
+  const searchWord = (searchTerm: string) => {
+    if (!searchTerm.trim()) {
+      setState({ synonyms: [], isLoading: false });
+      return;
+    }
 
-    setIsLoading(true);
+    setState(prev => ({ ...prev, isLoading: true }));
+
     try {
-      // Note: This is a mock implementation. Replace with actual SJP API when available
-      const mockDefinitions: WordDefinition[] = [
-        {
-          definition: "Główne znaczenie słowa",
-          synonyms: ["synonim1", "synonim2"]
-        }
-      ];
-
-      setDefinitions(mockDefinitions);
+      // Read thesaurus file
+      const thesaurusPath = join(__dirname, "../assets/thesaurus-1.5.txt");
+      const thesaurusContent = readFileSync(thesaurusPath, 'utf8');
       
-      if (mockDefinitions.length === 0) {
-        await showToast({
+      // Find synonyms
+      const foundSynonyms = findSynonyms(searchTerm, thesaurusContent);
+      
+      setState({
+        synonyms: foundSynonyms,
+        isLoading: false
+      });
+
+      if (foundSynonyms.length === 0) {
+        showToast({
           style: Toast.Style.Failure,
-          title: "Nie znaleziono definicji",
-          message: `Brak informacji dla słowa "${searchWord}"`
+          title: "Nie znaleziono synonimów",
+          message: `Brak synonimów dla słowa "${searchTerm}"`
         });
       }
     } catch (error) {
-      await showToast({
+      showToast({
         style: Toast.Style.Failure,
-        title: "Błąd wyszukiwania",
-        message: "Nie udało się pobrać definicji"
+        title: "Błąd",
+        message: "Nie udało się wczytać słownika synonimów"
       });
-    } finally {
-      setIsLoading(false);
+      setState({ synonyms: [], isLoading: false });
     }
-  }
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (word) {
+        searchWord(word);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [word]);
 
   return (
     <List
       searchText={word}
       onSearchTextChange={setWord}
       searchBarPlaceholder="Wpisz polskie słowo"
-      isLoading={isLoading}
+      isLoading={state.isLoading}
     >
-      {definitions.length > 0 ? (
-        <List.Section title="Definicje i synonimy">
-          {definitions.map((def, index) => (
+      {state.synonyms.length > 0 ? (
+        <List.Section title="Synonimy">
+          {state.synonyms.map((synonym, index) => (
             <List.Item
               key={index}
-              title={def.definition}
-              subtitle={def.synonyms ? `Synonimy: ${def.synonyms.join(", ")}` : undefined}
+              title={synonym}
               actions={
                 <ActionPanel>
-                  {def.synonyms && def.synonyms.map((synonym, synIndex) => (
-                    <Action.CopyToClipboard 
-                      key={synIndex} 
-                      title={`Kopiuj synonim: ${synonym}`} 
-                      content={synonym} 
-                    />
-                  ))}
+                  <Action.CopyToClipboard 
+                    title="Kopiuj synonim" 
+                    content={synonym} 
+                  />
+                  <Action
+                    title="Szukaj tego synonimu"
+                    onAction={() => {
+                      setWord(synonym);
+                    }}
+                  />
                 </ActionPanel>
               }
             />
           ))}
         </List.Section>
       ) : (
-        <List.Section title="Wyszukiwanie">
-          <List.Item
-            title="Znajdź definicję"
-            subtitle="Naciśnij Enter, aby wyszukać"
-            actions={
-              <ActionPanel>
-                <Action 
-                  title="Szukaj" 
-                  onAction={() => searchWord(word)} 
-                />
-              </ActionPanel>
-            }
-          />
-        </List.Section>
+        <List.EmptyView
+          title="Wpisz słowo aby znaleźć synonimy"
+          description="Synonimy zostaną wyświetlone automatycznie podczas wpisywania"
+        />
       )}
     </List>
   );

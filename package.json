@@ -11,7 +11,7 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "find-synonyms",
+      "name": "index",
       "title": "Find Polish Synonyms",
       "description": "Look up synonyms for Polish words",
       "mode": "view"
